@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+#  redis:
+#    image: 'bitnami/redis:latest'
+#    environment:
+#      - ALLOW_EMPTY_PASSWORD=yes
+#    networks:
+#      - todo_network
+
+  ross_db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+networks:
+  todo_network:
+    driver: bridge
+    name: todo_network
