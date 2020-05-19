@@ -1,0 +1,4 @@
+/.idea
+/venv
+secret_key
+dict_once_again.py
