@@ -2,8 +2,10 @@
 /venv
 dict_once_again.py
 models/__pycache__/
+archive_code/
 helpers/__pycache__/
 secret_key/__pycache__/
 secret_key/
 secret.conf
+
 
