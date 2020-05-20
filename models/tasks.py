@@ -2,31 +2,32 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from models.base import Base, scoped_session
 from models.user import Users
 from sqlalchemy.orm import relationship
+from marshmallow import Schema, fields, ValidationError
 
 
 class Tasks(Base):
     __tablename__ = 'tasks'
     task_id = Column(Integer, autoincrement=True, primary_key=True)
-    task_name = Column(String(180), unique=True)
+    task_name = Column(String(180))
 
     user_id = Column(Integer, ForeignKey(Users.users_id))
     user = relationship("Users", backref="tasks")
 
     @classmethod
-    def create_task(cls, task_name,user_id):  # user_id
+    def create_task(cls, task_name, user_id):  # user_id
         with scoped_session() as session:
-            tasks = Tasks(task_name=task_name,user_id=user_id)  # ,user_id =user_id
+            tasks = Tasks(task_name=task_name, user_id=user_id)  # ,user_id =user_id
             session.add(tasks)
 
     @classmethod
     def get_task_by_id(cls, task_id):
         with scoped_session() as session:
             return session.query(Tasks).filter_by(task_id=task_id).first()
-
-    @classmethod
-    def get_task_by_name(cls, task_name):
-        with scoped_session() as session:
-            return session.query(Tasks).filter_by(task_name=task_name).first()
+    #
+    # @classmethod
+    # def get_task_by_name(cls, task_name):
+    #     with scoped_session() as session:
+    #         return session.query(Tasks).filter_by(task_name=task_name).first()
 
     @classmethod
     def get_all_tasks(cls):
@@ -51,3 +52,9 @@ class Tasks(Base):
     def delete_all_task(cls):
         with scoped_session() as session:
             return session.query(Tasks).delete()
+
+
+class TaskSchema(Schema):
+    task_id = fields.Integer(required=True)
+    task_name = fields.String(required=True)
+    user_id = fields.Integer(required=True)

@@ -1,14 +1,15 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, String, Integer
 from models.base import Base, scoped_session
+from marshmallow import Schema, fields, validate
 
 
 class Users(Base):
     __tablename__ = 'users'
     users_id = Column(Integer, autoincrement=True, primary_key=True)
-    email = Column(String(50), index=True, unique=True)
+    email = Column(String(50), index=True, unique=True, nullable=False)
     password_hash = Column(String(128))
-    username = Column(String(25), index=True, unique=True)
+    username = Column(String(25))
     token_field = Column(String)
 
     def set_password(self, password):
@@ -20,10 +21,11 @@ class Users(Base):
     def __repr__(self):
         return f"<User {self.users_id}/{self.email}/{self.username}>"
 
-    @classmethod
-    def logout(cls):
-        with scoped_session() as session:
-            session.close()
+    #
+    # @classmethod
+    # def logout(cls):
+    #     with scoped_session() as session:
+    #         session.close()
 
     @classmethod
     def get_user_by_email(cls, email):
@@ -96,13 +98,36 @@ class Users(Base):
         with scoped_session() as session:
             return session.query(Users).delete()
 
-# if __name__ == "__main__":
 
+class UserSchema(Schema):
+    re_email = r"(^[A-Za-z0-9_.+-]+@[A-Za-z0-9]+\.[A-Za-z]+$)"
+    re_password = r"^[A-Za-z0-9]{8,}$"
+    users_id = fields.Integer()
+    username = fields.String(required=True)
+    email = fields.Email(required=True, validate=validate.Regexp(regex=re_email, flags=0,
+                                                                 error="Email must include only letters numbers and "
+                                                                       "special symbols"))
+    password_hash = fields.String(required=True, validate=validate.Regexp(regex=re_password, flags=0,
+                                                                          error="Password must include letters and "
+                                                                                "numbers or password length is less "
+                                                                                "then 8 symbols "))
+    password = fields.String()
+# class UserBaseSchema(Schema):
+#     re_email = r"(^[A-Za-z0-9_.+-]+@[A-Za-z0-9]+\.[A-Za-z]+$)"
+#     re_password = r"^[A-Za-z0-9]{8,}$"
+#     users_id = fields.Integer()
+#     username = fields.String(required=True)
+#     email = fields.Email(required=True, validate=validate.Regexp(regex=re_email, flags=0,
+#                                                                  error="Email must include only letters numbers and "
+#                                                                        "special symbols"))
+
+
+# class UserOutputSchema(UserBaseSchema):
+#     password_hash = fields.String(required=True, validate=validate.Regexp(regex=super().re_password, flags=0,
+#                                                                           error="Password must include letters and "
+#                                                                                 "numbers or password length is less "
+#                                                                                 "then 8 symbols "))
 #
-#     Users.registation_user(email="novosiadlo@gmail.com", password="123456789", username="tarzan")
-# Users.update_email(users_id=1, email="2324578asd")
-# sers.update_password(users_id=1, password="2324578a")U
-# Tasks.create_task(task_name="sleep", user_id=1)
-# Tasks.update_task(task_id=1, task_name="lox")
-# Tasks.delete_task(task_id=1)
-# user = Users(email='ross.novos@gmail.com', password="23132", token="wearethechampion")
+#
+# class UserInputSchema(UserBaseSchema):
+#     password = fields.String()
