@@ -1,14 +1,15 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, String, Integer
 from models.base import Base, scoped_session
+from marshmallow import Schema, fields, ValidationError
 
 
 class Users(Base):
     __tablename__ = 'users'
     users_id = Column(Integer, autoincrement=True, primary_key=True)
-    email = Column(String(50), index=True, unique=True)
+    email = Column(String(50), index=True, unique=True, nullable=False)
     password_hash = Column(String(128))
-    username = Column(String(25), index=True, unique=True)
+    username = Column(String(25))
     token_field = Column(String)
 
     def set_password(self, password):
@@ -20,10 +21,11 @@ class Users(Base):
     def __repr__(self):
         return f"<User {self.users_id}/{self.email}/{self.username}>"
 
-    @classmethod
-    def logout(cls):
-        with scoped_session() as session:
-            session.close()
+    #
+    # @classmethod
+    # def logout(cls):
+    #     with scoped_session() as session:
+    #         session.close()
 
     @classmethod
     def get_user_by_email(cls, email):
@@ -96,13 +98,9 @@ class Users(Base):
         with scoped_session() as session:
             return session.query(Users).delete()
 
-# if __name__ == "__main__":
 
-#
-#     Users.registation_user(email="novosiadlo@gmail.com", password="123456789", username="tarzan")
-# Users.update_email(users_id=1, email="2324578asd")
-# sers.update_password(users_id=1, password="2324578a")U
-# Tasks.create_task(task_name="sleep", user_id=1)
-# Tasks.update_task(task_id=1, task_name="lox")
-# Tasks.delete_task(task_id=1)
-# user = Users(email='ross.novos@gmail.com', password="23132", token="wearethechampion")
+class UserSchema(Schema):
+    users_id = fields.Integer(required=True)
+    username = fields.String(required=True)
+    email = fields.Email(required=True)
+    password_hash = fields.String(required=True)

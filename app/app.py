@@ -3,7 +3,7 @@ from functools import wraps
 from datetime import datetime, timedelta
 from flask import Flask, request
 from flask_restful import Resource, Api
-from models.user import Users as DB_USERS
+from models.user import UserSchema, Users as DB_USERS
 from secret_key.secret_word_config_parser import SecretFile
 
 app = Flask(__name__)
@@ -32,17 +32,16 @@ class User(Resource):
 
     def get(self, users_id):
         user = DB_USERS.get_user_by_id(users_id)
-        print(user)
-        output_user = {"users_id": user.users_id,
-                       "email": user.email,
-                       "username": user.username}
+        schema_user = UserSchema(only=("users_id", "email", "username"))
+        output_user = schema_user.dump(user)
+        print(output_user)
         return output_user, 200
 
     def put(self, users_id):
         body = request.json
         user = DB_USERS.update_user(users_id, body)
-        output_user = {"email": user.email,
-                       "username": user.username}
+        schema = UserSchema(only=("email", "username"))
+        output_user = schema.dump(user)
         return output_user, 200
 
     def delete(self, users_id):
@@ -52,19 +51,13 @@ class User(Resource):
 
 class Users(Resource):
     def get(self):
-        list_of_users = []
+        # list_of_users = []
         users = DB_USERS.get_all_users()
         print(users)
-        # users == [<User 86/as/as>, <User 87/ass/ass>]
-
-        for user_data in users:
-            users_info = {"users_id": user_data.users_id,
-                          "email": user_data.email,
-                          "username": user_data.username,
-                          "password": user_data.password_hash
-                          }
-            list_of_users.append(users_info)
-        return list_of_users, 200
+        schema = UserSchema(only=("users_id", "email", "username"), many=True)
+        print(schema)
+        all_users = schema.dump(users)
+        return all_users, 200
 
     def post(self):
         body = request.json
@@ -73,13 +66,8 @@ class Users(Resource):
         password = body.get("password")
         user = DB_USERS.registation_user(email, username, password)
         user = DB_USERS.get_user_by_email(email)
-        output_user = {
-            "users_id": user.users_id,
-            "email": user.email,
-            "username": user.username,
-            "password": user.password_hash,
-        }
-
+        user_schema = UserSchema(only=("email", "password_hash", "username"))
+        output_user = user_schema.dump(user)
         return output_user, 201
 
     def delete(self):
@@ -107,24 +95,6 @@ class LogIn(Resource):
                 saved_token = DB_USERS.update_user_by_email(email, token)
                 return saved_token, 200
             return token
-
-        # auth = request.authorization
-        # if not auth or not auth.username or not auth.password:
-        #     return "Password or email is incorrect", 401
-        #
-        # user = DB_USERS.get_user_by_email(auth.username)
-        # if not user:
-        #     return "Could not verify", 401
-        # if DB_USERS.check_password(user.password_hash, auth.password):
-        #     # if user and DB_USERS.check_password(user.password_hash, password):
-        #     token = jwt.encode({"users_id": DB_USERS.users_id, "exp": datetime.utcnow() + timedelta(hours=24)})
-        #     return jsonify({"token": token.decode("UTF-8")})
-        # return "Please check your email or password", 401
-
-    # auth = request.authorization
-    # email = body.get("email")
-    # password = body.get("password")
-    # if not auth or not auth.username
 
 
 #

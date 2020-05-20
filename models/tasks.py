@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from models.base import Base, scoped_session
 from models.user import Users
 from sqlalchemy.orm import relationship
+from marshmallow import Schema, fields, ValidationError
 
 
 class Tasks(Base):
@@ -13,9 +14,9 @@ class Tasks(Base):
     user = relationship("Users", backref="tasks")
 
     @classmethod
-    def create_task(cls, task_name,user_id):  # user_id
+    def create_task(cls, task_name, user_id):  # user_id
         with scoped_session() as session:
-            tasks = Tasks(task_name=task_name,user_id=user_id)  # ,user_id =user_id
+            tasks = Tasks(task_name=task_name, user_id=user_id)  # ,user_id =user_id
             session.add(tasks)
 
     @classmethod
@@ -51,3 +52,9 @@ class Tasks(Base):
     def delete_all_task(cls):
         with scoped_session() as session:
             return session.query(Tasks).delete()
+
+
+class TaskSchema(Schema):
+    task_id = fields.Integer(required=True)
+    task_name = fields.String(required=True)
+    user_id = fields.Integer(required=True)

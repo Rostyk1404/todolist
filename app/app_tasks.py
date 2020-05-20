@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-from models.tasks import Tasks as DB_TASKS
+from models.tasks import TaskSchema, Tasks as DB_TASKS
 
 app = Flask(__name__)
 api = Api(app)
@@ -10,17 +10,15 @@ class Task(Resource):
     def get(self, task_id):
         task = DB_TASKS.get_task_by_id(task_id)
         print(task)
-        output_task = {"task_id": task.task_id,
-                       "task_name": task.task_name
-                       }
+        task_schema = TaskSchema(only=("task_name", "task_id"))
+        output_task = task_schema.dump(task)
         return output_task, 200
 
     def put(self, task_id):
         body = request.json
         task = DB_TASKS.update_task(task_id, body)
-        output_task = {
-            "task_name": task.task_name
-        }
+        task_schema = TaskSchema(only=("task_name"))
+        output_task = task_schema.dump(task)
         return output_task, 200
 
     def delete(self, task_id):
@@ -30,14 +28,10 @@ class Task(Resource):
 
 class Tasks(Resource):
     def get(self):
-        list_of_tasks = []
         tasks = DB_TASKS.get_all_tasks()
-        for task in tasks:
-            output_task = {"task_id": task.task_id,
-                           "task_name": task.task_name
-                           }
-            list_of_tasks.append(output_task)
-        return list_of_tasks, 200
+        task_schema = TaskSchema(only=("task_id", "task_name"), many=True)
+        output_task = task_schema.dump(tasks)
+        return output_task, 200
 
     def post(self):
         body = request.json
@@ -45,10 +39,8 @@ class Tasks(Resource):
         user_id = body.get("user_id")
         task = DB_TASKS.create_task(task_name, user_id)
         task = DB_TASKS.get_task_by_name(task_name)
-        output_task = {"task_id": task.task_id,
-                       "task_name": task.task_name,
-                       "user_id": task.user_id,
-                       }
+        task_schema = TaskSchema(only=("task_id", "task_name", "user_id"))
+        output_task = task_schema.dump(task)
         return output_task, 200
 
     def delete(self):
@@ -61,3 +53,5 @@ api.add_resource(Task, "/tasks/<task_id>")
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
+
+#
