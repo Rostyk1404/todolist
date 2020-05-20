@@ -2,9 +2,9 @@ import jwt
 from functools import wraps
 from datetime import datetime, timedelta
 from flask import Flask, request
-from flask_login import UserMixin
 from flask_restful import Resource, Api
 from models.user import Users as DB_USERS
+from secret_key.secret_word_config_parser import SecretFile
 
 app = Flask(__name__)
 api = Api(app)
@@ -102,11 +102,10 @@ class LogIn(Resource):
         elif user.check_password(password):
 
             token = jwt.encode({"users_id": user.users_id},
-                               "lol", algorithm='HS256').decode()
-            print(token)
-            print(type(token))
-            # token = {"token_fied": user.token_field}
-            # print(save_token)
+                               SecretFile.secret_key_getter(), algorithm='HS256').decode("UTF-8")
+            if token:
+                saved_token = DB_USERS.update_user_by_email(email, token)
+                return saved_token, 200
             return token
 
         # auth = request.authorization
@@ -128,17 +127,17 @@ class LogIn(Resource):
     # if not auth or not auth.username
 
 
-class LogOut(Resource):
-    def put(self):
-
-        return DB_USERS.logout()
-
+#
+# class LogOut(Resource):
+#
+#     def get(self):
+#         DB_USERS.logout()
 
 
 api.add_resource(Users, '/users')
 api.add_resource(User, '/users/<users_id>')
 api.add_resource(LogIn, '/login')
-api.add_resource(LogOut, '/logout')
+# api.add_resource(LogOut, '/logout')
 
 if __name__ == '__main__':
     app.run(debug=True)

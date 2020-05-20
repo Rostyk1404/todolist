@@ -1,4 +1,3 @@
-import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, String, Integer
 from models.base import Base, scoped_session
@@ -61,12 +60,25 @@ class Users(Base):
         return user
 
     @classmethod
+    def update_user_by_email(cls, email, token_field):
+        with scoped_session() as session:
+            user = session.query(Users).filter_by(email=email).update({"token_field": token_field})
+        return user
+
+    @classmethod
     def update_user(cls, users_id, user_data):
         with scoped_session() as session:
             user = session.query(Users).filter_by(users_id=users_id).one()
             for k, v in user_data.items():
                 setattr(user, k, v)
             return user
+
+    # @classmethod
+    # def logout(cls):
+    #     with scoped_session() as session:
+    #         if Users.token_field is not "":
+    #
+    #     session.close()
 
     @classmethod
     def update_password(cls, users_id, password):
