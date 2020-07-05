@@ -1,5 +1,25 @@
 version: "3.7"
 services:
+  user_service:
+    build:
+      context: ./
+      dockerfile: ./user_service/Dockerfile
+    image: user_service_image:latest
+    ports:
+      - "8000:5000"
+    networks:
+      - todo_network
+
+#  task_service:
+#    build:
+#      context: ./task_service/task_app
+#      dockerfile: ./Dockerfile
+#    image: task_service_image:latest
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - todo_network
+#
 #  redis:
 #    image: 'bitnami/redis:latest'
 #    environment:
@@ -7,13 +27,22 @@ services:
 #    networks:
 #      - todo_network
 
-  ross_db:
-    image: postgres
+  postgres:
+    image: postgres:latest
     restart: always
-    ports:
-      - 5432:5432
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      POSTGRES_DATABASE: users_db
+    ports:
+      - 5433:5432
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: example
+#      POSTGRES_DATABASE: users_db
+    networks:
+      - todo_network
+
 
   adminer:
     image: adminer
