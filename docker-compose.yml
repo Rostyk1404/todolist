@@ -1,31 +1,17 @@
 version: "3.7"
 services:
   user_service:
+    restart: on-failure
     build:
       context: ./
       dockerfile: ./user_service/Dockerfile
     image: user_service_image:latest
+    depends_on:
+      - postgres
     ports:
-      - "8000:5000"
+      - "5000:5000"
     networks:
       - todo_network
-
-#  task_service:
-#    build:
-#      context: ./task_service/task_app
-#      dockerfile: ./Dockerfile
-#    image: task_service_image:latest
-#    ports:
-#      - "8000:8000"
-#    networks:
-#      - todo_network
-#
-#  redis:
-#    image: 'bitnami/redis:latest'
-#    environment:
-#      - ALLOW_EMPTY_PASSWORD=yes
-#    networks:
-#      - todo_network
 
   postgres:
     image: postgres:latest
@@ -33,13 +19,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
-      POSTGRES_DATABASE: users_db
+      POSTGRES_DB: users_db
     ports:
-      - 5433:5432
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: example
-#      POSTGRES_DATABASE: users_db
+      - 5432:5432
     networks:
       - todo_network
 
@@ -47,8 +29,13 @@ services:
   adminer:
     image: adminer
     restart: always
+    depends_on:
+
+      - postgres
     ports:
       - 8080:8080
+    networks:
+      - todo_network
 
 networks:
   todo_network:
