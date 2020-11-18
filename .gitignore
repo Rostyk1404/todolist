@@ -1,6 +1,6 @@
 /.idea
 /venv
-dict_once_again.py
+
 models/__pycache__/
 archive_code/!
 helpers/__pycache__/

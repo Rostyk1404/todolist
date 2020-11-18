@@ -1,16 +1,16 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
-from models.base import Base, scoped_session
-from models.user import Users
+from app.database import scoped_session
+from app.models import Base
+from app.models.user import Users
 from sqlalchemy.orm import relationship
 from marshmallow import Schema, fields
 
 
 class Tasks(Base):
-    __tablename__ = 'tasks'
+    __tablename__ = "tasks"
     task_id = Column(Integer,
                      autoincrement=True, primary_key=True)
     task_name = Column(String(180))
-
     user_id = Column(Integer, ForeignKey(Users.users_id))
     user = relationship("Users", backref="tasks")
 

@@ -1,16 +1,16 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, String, Integer
-from models.base import Base, scoped_session
 from marshmallow import Schema, fields, validate
+from app.models import Base
 
 
 class Users(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     users_id = Column(Integer, autoincrement=True, primary_key=True)
     email = Column(String(50), index=True, unique=True, nullable=False)
     password_hash = Column(String(128))
     username = Column(String(25))
-    token_field = Column(String)
+    # token_field = Column(String)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -20,12 +20,6 @@ class Users(Base):
 
     def __repr__(self):
         return f"<User {self.email}/{self.username}>"
-
-    #
-    # @classmethod
-    # def logout(cls):
-    #     with scoped_session() as session:
-    #         session.close()
 
     @classmethod
     def get_user_by_email(cls, email):
@@ -112,6 +106,9 @@ class UserSchema(Schema):
                                                                                 "numbers or password length is less "
                                                                                 "then 8 symbols "))
     password = fields.String()
+
+
+from app.database import scoped_session
 # class UserBaseSchema(Schema):
 #     re_email = r"(^[A-Za-z0-9_.+-]+@[A-Za-z0-9]+\.[A-Za-z]+$)"
 #     re_password = r"^[A-Za-z0-9]{8,}$"

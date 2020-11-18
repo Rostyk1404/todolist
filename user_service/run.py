@@ -1,7 +1,8 @@
-from app.app import app
-from app.app_tasks import task_app
-from models.user import Users
-from models.tasks import Tasks
+"""
+This module starts app at port 0.0.0.0
+"""
+from app import app
 
-if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
