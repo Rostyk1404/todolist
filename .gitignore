@@ -1,9 +1,6 @@
 /.idea
 /venv
 
-models/__pycache__/
-archive_code/!
-helpers/__pycache__/
-secret_key/__pycache__/
+*.pyc
 secret_key
 secret.conf
