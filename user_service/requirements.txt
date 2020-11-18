@@ -3,7 +3,7 @@ aniso8601==8.0.0
 cachelib==0.1.1
 cffi==1.14.2
 click==7.1.2
-cryptography==2.9.2
+cryptography==3.2
 Flask==1.1.2
 Flask-RESTful==0.3.8
 Flask-Session==0.3.2
