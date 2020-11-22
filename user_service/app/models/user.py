@@ -107,7 +107,6 @@ class UserSchema(Schema):
                                                                                 "then 8 symbols "))
     password = fields.String()
 
-
 from app.database import scoped_session
 # class UserBaseSchema(Schema):
 #     re_email = r"(^[A-Za-z0-9_.+-]+@[A-Za-z0-9]+\.[A-Za-z]+$)"

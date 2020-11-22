@@ -2,10 +2,10 @@ import os
 import sys
 from flask import Flask
 from flask_restful import Api
+
 from app_config import Config
 
 # append path to system list
-sys.path.append(os.path.join(os.path.dirname(os.getcwd())))
 app = Flask(__name__)
 api = Api(app)
 app.config.from_object(Config)
