@@ -15,15 +15,15 @@ config = context.config
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-# sys.path.append(os.getcwd() + '/user_service')
+sys.path.append(os.getcwd() + '/user_service')
 
 sys.path.append(os.getcwd())
 print(sys.path)
 from app import app
 from app.models.user import Users
 from app.models.tasks import Tasks
-
-target_metadata = [Users.metadata, Tasks.metadata]
+from app.models import Base
+target_metadata = Base.metadata
 
 
 # other values from the config, defined by the needs of env.py,

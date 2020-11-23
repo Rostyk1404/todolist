@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Column, String, Integer
 from marshmallow import Schema, fields, validate
 from app.models import Base
+from app.database import scoped_session
 
 
 class Users(Base):
@@ -107,7 +108,6 @@ class UserSchema(Schema):
                                                                                 "then 8 symbols "))
     password = fields.String()
 
-from app.database import scoped_session
 # class UserBaseSchema(Schema):
 #     re_email = r"(^[A-Za-z0-9_.+-]+@[A-Za-z0-9]+\.[A-Za-z]+$)"
 #     re_password = r"^[A-Za-z0-9]{8,}$"

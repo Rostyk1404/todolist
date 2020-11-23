@@ -20,7 +20,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
       POSTGRES_DB: users_db
-#      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - 5432:5432
     networks:

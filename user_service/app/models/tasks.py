@@ -12,7 +12,7 @@ class Tasks(Base):
                      autoincrement=True, primary_key=True)
     task_name = Column(String(180))
     user_id = Column(Integer, ForeignKey(Users.users_id))
-    user = relationship("Users", backref="tasks")
+    user = relationship(Users)
 
     @classmethod
     def create_task(cls, task_name, user_id):
